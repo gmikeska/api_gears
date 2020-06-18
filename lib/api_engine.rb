@@ -1,6 +1,7 @@
 require 'uri'
 require 'net/http'
 require 'date'
+require 'json'
 
 class ApiEngine
 
@@ -8,24 +9,24 @@ class ApiEngine
     @uri = URI.parse(url)
     @endpoints = {}
     @last_query_time = 0
-    if(options[:query_interval].present?)
+    if(!options[:query_interval].nil?)
       @query_interval = options[:query_interval]
     else
       @query_interval = 0
     end
 
-    if(options[:params].present?)
+    if(!options[:params].nil?)
       @params = options[:params]
     else
       @params = {}
     end
-    if(options[:content_type].present?)
+    if(!options[:content_type].nil?)
       @content_type = options[:content_type]
     else
       @content_type = "plain"
     end
 
-    if(options[:query_method].present?)
+    if(!options[:query_method].nil?)
       @query_method = options[:query_method].to_sym
     else
       @query_method = :GET
@@ -60,7 +61,7 @@ class ApiEngine
     http.use_ssl = true
     if(query_method == :GET)
       request = Net::HTTP::Get.new(url)
-      if(@params.present?) # Set API-wide header params, such as api-key
+      if(!@params.nil?) # Set API-wide header params, such as api-key
         @params.each_pair do |param_name,param|
           request[param_name.to_s] = param
         end
@@ -102,7 +103,7 @@ class ApiEngine
 
   end
   def method_missing(m, **args, &block)
-    if(@endpoints[m.to_sym].present?)
+    if(!@endpoints[m.to_sym].nil?)
       request(endpoint:m.to_sym,**args)
     else
       raise NoMethodError.new "endpoint '#{m}' not defined in #{self.class.name}. Call `<#{self.class.name} instance>.endpoints` to get a list of defined endpoints."
@@ -119,13 +120,13 @@ class ApiEngine
     @endpoints[e.to_sym][:query_params].map{|arg| arg.to_sym}.concat(@endpoints[e.to_sym][:set_query_params].keys)
   end
   def prepare_data(data, depth=0,&block)
-    if(block.present?)
+    if(!block.nil?)
       yield(data,depth)
     end
     depth = depth + 1
     if(data.is_a? Array)
       data.each_index do |i|
-        if(block.present?)
+        if(!block.nil?)
           data[i] = self.prepare_data(data[i],depth, &block)
         else
           data[i] = self.prepare_data(data[i],depth)
@@ -135,7 +136,7 @@ class ApiEngine
     if(data.is_a? Hash)
       data.symbolize_keys!
       data.each_pair do |k,v|
-        if(block.present?)
+        if(!block.nil?)
           data[k] = self.prepare_data(v,depth, &block)
         else
           data[k] = self.prepare_data(v,depth)
@@ -191,9 +192,9 @@ class ApiEngine
 
       e_path = @endpoints[endpoint.to_sym][:path]
 
-      if(@endpoints[endpoint.to_sym][:args].present? && @endpoints[endpoint.to_sym][:args].length > 0)
+      if(!@endpoints[endpoint.to_sym][:args].nil? && @endpoints[endpoint.to_sym][:args].length > 0)
         args_for(endpoint.to_sym).each do |arg|
-          if(args[arg].nil? && arg.to_s.split("_").length == 2 && args[arg.to_s.split("_")[0].to_sym].present?)
+          if(!args[arg].nil? && arg.to_s.split("_").length == 2 && args[arg.to_s.split("_")[0].to_sym].nil?)
             value = args[arg.to_s.split("_")[0].to_sym]
           else
             value = args[arg]
