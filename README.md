@@ -1,10 +1,10 @@
-# api_engine Gem
+# api_gears Gem
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-  ```gem 'api_engine'```
+  ```gem 'api_gears'```
 
 And then execute:
 
@@ -12,13 +12,13 @@ And then execute:
 
 Or install it yourself as:
 
-  ```$ gem install api_engine```
+  ```$ gem install api_gears```
 
 ## Basic Usage Example
 The following example implements the api for the cryptocurrency block explorer located at [View Site](http://blockcypher.com)
 
 ```
-class BlockcypherApi < ApiEngine
+class BlockcypherApi < ApiGears
   def initialize(**options)
     if(options[:params].nil?)
       options[:params] = {}
@@ -52,7 +52,7 @@ returns:
 ## Handling returned data
 The following example implements a portion of the api for the church management software called "Breeze". [View Site](https://www.breezechms.com/) Notice that the method "request" is overridden, and modifies the data before return it to the caller.
 ```
-class BreezeApi < ApiEngine
+class BreezeApi < ApiGears
   def initialize(**options)
     if(options[:params].nil?)
       options[:params] = {}
