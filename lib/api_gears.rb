@@ -2,9 +2,13 @@ require 'uri'
 require 'net/http'
 require 'date'
 require 'json'
-
+# Base class for API client development, specify endpoints with `endpoint "shortcut_name", path:"api/subpath/"` syntax and method calls to valid shortcut_names will be caught with method_missing
 class ApiGears
-
+  # Intializes a new ApiGears instance.
+  #
+  # @param url [String] the base url for the API being queried
+  # @param options [Hash] allows setting :query_interval, global params (such as api-key, and default query_method)
+  # @return [ApiGears] a new ApiGears Instance
   def initialize(url, **options)
     @uri = URI.parse(url)
     @endpoints = {}
@@ -32,7 +36,11 @@ class ApiGears
       @query_method = :GET
     end
   end
-
+  # Provides information on the request an endpoint will send.
+  #
+  # @param endpoint [Symbol] the base url for the API being queried
+  # @param args [Hash] params to flesh-out the API call.
+  # @return [nil]
   def request_info(endpoint,**args)
     if(args.nil?)
       args = {}
@@ -102,6 +110,12 @@ class ApiGears
     # end
 
   end
+  # Handles calls to any endpoint created during initialization
+  #
+  # @param m [Symbol] the method name being called
+  # @param args [Hash] params passed to method call
+  # @param block [Block] As yet unused.
+  # @return [Hash] or [Array], depending on what API returns.
   def method_missing(m, **args, &block)
     if(!@endpoints[m.to_sym].nil?)
       request(endpoint:m.to_sym,**args)
@@ -110,15 +124,24 @@ class ApiGears
     end
 
   end
+  # Provides a list of endpoints that can be called as method names on the ApiGears object. Api calls are caught with #method_missing
+  #
+  # @return [Array]
   def endpoints
     @endpoints.keys
   end
+  # Provides a list of args that a particular endpoint needs
+  # @param e [Symbol] or [String]
+  # @return [Array] of argument symbols sought during endpoint call.
   def args_for(e)
     @endpoints[e.to_sym][:args].map{|arg| arg.to_sym}
   end
   def query_params_for(e)
     @endpoints[e.to_sym][:query_params].map{|arg| arg.to_sym}.concat(@endpoints[e.to_sym][:set_query_params].keys)
   end
+  # Can be called during override of #request to modify API response data before return
+  # @param data [Hash] or [Array]
+  # @return [Hash] or [Array] depending on the data in the API response
   def prepare_data(data, depth=0,&block)
     if(!block.nil?)
       yield(data,depth)
@@ -160,7 +183,10 @@ class ApiGears
       uf = url_for(args[:endpoint],args)
       return {query_method:args[:query_method],**uf}
     end
-
+    # Allows implementer to specify an API endpoint to be queried by a specific method name.
+    # @param name [String] the method name that will execute the query
+    # @param args [Hash] accepts path (subpath to query), query_params (query parameters to be sent when method is called) and set_query_params (query parameters that are specified ahead of time for each execution of the method being defined)
+    # @return [nil]
     def endpoint(name, **args, &block)
       if(args[:path] == nil)
         args[:path] = "/#{name.to_s}"
@@ -186,7 +212,10 @@ class ApiGears
       end
       @endpoints[name.to_sym] = {path:args[:path],args:path_args,query_params:args[:query_params],query_method:args[:query_method] ,set_query_params:args[:set_query_params], block:block}
     end
-
+    # Builds URL and args for a specific endpoint call
+    # @param endpoint [String] or [Symbol] the method name that has been called
+    # @param args [Hash] the args passed in during the method call
+    # @return [Hash] with url and query params
     def url_for(endpoint, args)
       url = @uri.dup
 
