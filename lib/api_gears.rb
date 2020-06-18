@@ -3,7 +3,7 @@ require 'net/http'
 require 'date'
 require 'json'
 
-class ApiEngine
+class ApiGears
 
   def initialize(url, **options)
     @uri = URI.parse(url)
