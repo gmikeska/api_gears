@@ -223,12 +223,15 @@ class ApiGears
 
       if(!@endpoints[endpoint.to_sym][:args].nil? && @endpoints[endpoint.to_sym][:args].length > 0)
         args_for(endpoint.to_sym).each do |arg|
-          if(!args[arg].nil? && arg.to_s.split("_").length == 2 && args[arg.to_s.split("_")[0].to_sym].nil?)
+          specific_arg_not_found = (args[arg].nil?)
+          arg_has_two_parts = (arg.to_s.split("_").length == 2)
+          arg_shortcut_found = (!args[arg.to_s.split("_")[0].to_sym].nil?)
+          if(specific_arg_not_found && arg_has_two_parts && arg_shortcut_found )
             value = args[arg.to_s.split("_")[0].to_sym]
           else
             value = args[arg]
           end
-          e_path = e_path.gsub("{#{arg}}", value.to_s)
+          e_path = e_path.gsub("{#{arg.to_s}}", value.to_s)
         end
       end
 
@@ -248,6 +251,7 @@ class ApiGears
           query_set[param.to_sym] =  @endpoints[endpoint.to_sym][:set_query_params][param.to_sym]
         end
       end
+
 
       if(args[:query_method] == :GET)
         url.query = URI.encode_www_form(query_set)
