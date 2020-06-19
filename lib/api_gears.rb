@@ -214,7 +214,7 @@ class ApiGears
     end
     # Builds URL and args for a specific endpoint call
     # @param endpoint [String] or [Symbol] the method name that has been called
-    # @param args [Hash] the args passed in during the method call
+    # @param args [Hash] the args passed in during the method call, when the required arg has 2 parts, (eg "book_id"), the first part of the arg name can be used (in this case "book" though this should only be used when "book" is unique in the query)
     # @return [Hash] with url and query params
     def url_for(endpoint, args)
       url = @uri.dup
