@@ -96,7 +96,11 @@ class ApiGears
       response = http.request(request)
     end
     @last_query_time = DateTime.now.strftime('%s').to_i
-    data = JSON.parse(response.read_body)
+    if(response.content_type == "application/json")
+      data = JSON.parse(response.read_body)
+    else
+      data = response.read_body
+    end
     if(response.code.to_i >= 200 && response.code.to_i < 300)
       puts "success"
       return data
