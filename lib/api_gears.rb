@@ -138,7 +138,11 @@ class ApiGears
   # @param e [Symbol] or [String]
   # @return [Array] of argument symbols sought during endpoint call.
   def args_for(e)
-    @endpoints[e.to_sym][:args].map{|arg| arg.to_sym}
+    if(@endpoints[e.to_sym][:args])
+      return @endpoints[e.to_sym][:args].map{|arg| arg.to_sym}.concat(query_params_for(e))
+    else
+      return [].concat(query_params_for(e))
+    end
   end
   def query_params_for(e)
     @endpoints[e.to_sym][:query_params].map{|arg| arg.to_sym}.concat(@endpoints[e.to_sym][:set_query_params].keys)
