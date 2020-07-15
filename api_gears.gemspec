@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'api_gears'
-  s.version     = '1.0.5'
+  s.version     = '1.0.6'
   s.date        = '2020-06-18'
   s.summary     = "Rapid API client deployment library"
   s.description = "ApiGears enables rapid deployment of API clients."
