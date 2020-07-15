@@ -134,10 +134,20 @@ class ApiGears
   def endpoints
     @endpoints.keys
   end
-  # Provides a list of args that a particular endpoint needs
+  # Provides a list of args that a particular endpoint needs to insert into url
   # @param e [Symbol] or [String]
   # @return [Array] of argument symbols sought during endpoint call.
   def args_for(e)
+    if(@endpoints[e.to_sym][:args])
+      return @endpoints[e.to_sym][:args].map{|arg| arg.to_sym}
+    else
+      return []
+    end
+  end
+  # Provides a list of args that a particular endpoint needs. Combines url arguments and other query params.
+  # @param e [Symbol] or [String]
+  # @return [Array] of argument symbols sought during endpoint call.
+  def required_args(e)
     if(@endpoints[e.to_sym][:args])
       return @endpoints[e.to_sym][:args].map{|arg| arg.to_sym}.concat(query_params_for(e))
     else

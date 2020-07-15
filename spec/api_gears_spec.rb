@@ -5,7 +5,7 @@ describe ApiGears do
   describe "args_for" do
     context "called with an endpoint symbol" do
       it "responds to endpoint method calls" do
-        expect(example_api.args_for(:address_info)).to eql( [:address])
+        expect(example_api.args_for(:address_info)).to eql([:address])
       end
     end
   end
