@@ -50,7 +50,7 @@ returns:
 ```
 
 ## Handling returned data
-The following example implements a portion of the api for the church management software called "Breeze". [View Site](https://www.breezechms.com/) Notice that the method "request" is overridden, and modifies the data before return it to the caller.
+The following example implements a portion of the api for the church management software called "Breeze". [View Site](https://www.breezechms.com/) Notice that the method "request" is overridden, and modifies the data before returning it to the caller.
 ```ruby
 class BreezeApi < ApiGears
   def initialize(**options)
